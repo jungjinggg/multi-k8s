@@ -6,13 +6,18 @@ before_install:
   - docker build -t parichanket/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run parichanket/react-test npm test -- --coverage
+  - docker run -e CI=true USERNAME/react-test npm test
 
 after_success:
   - docker build -t parichanket/multi-client ./client
   - docker build -t parichanket/multi-nginx ./nginx
   - docker build -t parichanket/multi-server ./server
-  - docker build -t parichanket/multi-worker ./worker 
+  - docker build -t parichanket/multi-worker ./worker
 
-script:
-  - docker run -e CI=true USERNAME/react-test npm test
+  # login to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # take those images and push them to docker hub
+  - docker push parichanket/multi-client
+  - docker push parichanket/multi-nginx
+  - docker push parichanket/multi-server
+  - docker push parichanket/multi-worker
