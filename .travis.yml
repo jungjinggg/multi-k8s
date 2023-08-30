@@ -1,0 +1,18 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t parichanket/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run parichanket/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t parichanket/multi-client ./client
+  - docker build -t parichanket/multi-nginx ./nginx
+  - docker build -t parichanket/multi-server ./server
+  - docker build -t parichanket/multi-worker ./worker 
+
+script:
+  - docker run -e CI=true USERNAME/react-test npm test
