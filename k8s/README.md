@@ -18,6 +18,8 @@ kubectl create secret generic <secret_name> --from-literal key=value
 kubectl create secret generic pgpassword --from-literal PGPASSWORD=12345****
 ```
 
+![create a secret](diagrams/secret.png)
+
 ## Configurations Diagram
 ![configurations](diagrams/k8_configs.png)
 
@@ -40,3 +42,25 @@ Persistent volume is not tied to any specific pods, completely isolated from the
 | ReadWriteOnce      | Can be used by a **single node** |
 | ReadOnlyMany   | **Multiple nodes** can **read** from this |
 | ReadWriteMany | Can be **read and written** to by **many nodes**|
+
+
+## Update an imageto the latest version
+Using **GIT_SHA** on a script for deploying the newest image 
+
+![Update to the latest version](diagrams/update-image.png)
+
+## Installing Helm
+Helm is a tool help defining, installing and upgrading applications running on K8s.
+
+[Helm](https://github.com/helm/helm)
+
+[Quick start guide](https://helm.sh/docs/intro/install/)
+
+## Assigning Tiller a Service account 
+![Assigning Tiller](diagrams/tiller.png)
+
+#### After assigning Tiller
+```
+helm init --service-account tiller --upgrade
+```
+*--upgrade flag is to make sure that helm is the latest version*

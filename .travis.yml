@@ -1,0 +1,30 @@
+sudo: required
+services:
+  - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+before_install:
+  # download google cloud SDK
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project skilful-bern-214822
+  - gcloud config set compute/zone eu-west1-a
+  - gcloud container cluster get-credentials multi-cluster
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # build the test version of multi-client
+  - docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  # run test
+  - docker run stephengrider/react-test npm test -- --coverage
+
+# if tests are successful, run a script to deploy newest images
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
